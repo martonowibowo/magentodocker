@@ -1,2 +1,75 @@
 #!/bin/bash
 
+INPUT=/tmp/menu.sh.$$
+
+function start_service(){
+dockup=$(docker-compose up -d 2>&1)
+start56=$(docker exec -it  magento56 service nginx start)
+start70=$(docker exec -it  magento70 service nginx start)
+startphp56=$(docker exec -it  magento56 service php-fpm start)
+startphp70=$(docker exec -it  magento70 service php-fpm start)
+startmysql=$(docker exec -it  percona57 service mysql start)
+whiptail --title "Start Service" --msgbox "Start Service: \n${dockup}\n${start56}\n${start70}\n${startphp56}\n${startphp70}\n${startmysql}" 30 60 5
+}
+
+function stop_service(){
+dockdown=$(docker-compose down 2>&1)
+whiptail --title "Stop Service" --msgbox "Stop Service: \n${dockdown}" 30 60 5
+}
+
+function docker_ip(){
+ip56=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' magento56)
+ip70=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' magento70)
+ipmysql=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' percona57)
+    whiptail --title "IP RESULT" --msgbox "IP PHP56: ${ip56}\nIP PHP70: ${ip70}\nIP MySQL: ${ipmysql}/Pass : password123" 15 60 4
+}
+
+function restart_nginx(){
+restart56=$(docker exec -it  magento56 service nginx restart)
+restart70=$(docker exec -it  magento70 service nginx restart)
+    whiptail --title "Nginx Restart" --msgbox "Magento56: \n${restart56}\n\
+\nMagento70: \n${restart70} " 15 60 4
+}
+function restart_php(){
+restart56=$(docker exec -it  magento56 service php-fpm restart)
+restart70=$(docker exec -it  magento70 service php-fpm restart)
+    whiptail --title "Nginx Restart" --msgbox "Magento56: \n${restart56}\n\
+\nMagento70: \n${restart70} " 15 60 4
+}
+function restart_mysql(){
+restartmysql=$(docker exec -it  percona57 service mysql restart)
+    whiptail --title "Nginx Restart" --msgbox "MySql Restart: \n${restartmysql} " 15 60 4
+}
+
+
+while true
+do
+
+### display main menu ###
+whiptail --clear --backtitle "Docker Tools" \
+--title "[ M A I N - M E N U ]" \
+--menu "Please to Check Your Docker IP and Set your domain using the Docker IP\nYou can use the UP/DOWN arrow keys\n\
+Choose the TASK" 15 50 7 \
+"Start All Service" "Start All Docker and Service" \
+"Docker IP" "Check Docker IP" \
+"Restart Nginx" "Restart Nginx Service" \
+"Restart PHP-FPM" "Restart PHP-FPM Service" \
+"Restart MySQL" "Restart MySQL Service" \
+"Stop All Service" "Stop All Service" \
+"Exit" "Exit to the shell" 2>"${INPUT}"
+
+menuitem=$(<"${INPUT}")
+
+
+# make decsion 
+case $menuitem in
+        "Start All Service") start_service;;
+	"Docker IP") docker_ip;;
+	"Restart Nginx") restart_nginx;;
+	"Restart PHP-FPM") restart_php;;
+	"Restart MySQL") restart_mysql;;
+        "Stop All Service") stop_service;;
+        Exit) echo "Bye"; break;;
+esac
+
+done
