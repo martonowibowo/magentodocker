@@ -6,6 +6,9 @@ services:
        - ".:/mnt"
      tty: true
      container_name: magento56
+     networks:
+      vpcbr:
+        ipv4_address: 172.18.0.2
 
   magentophp70:
      image: martonowibowo/centos6:php70
@@ -13,6 +16,9 @@ services:
      - ".:/mnt"
      tty: true
      container_name: magento70
+     networks:
+      vpcbr:
+        ipv4_address: 172.18.0.3
 
   percona57:
      image: martonowibowo/centos6:percona57
@@ -20,3 +26,14 @@ services:
      - ".:/mnt"
      tty: true
      container_name: percona57
+     networks:
+      vpcbr:
+        ipv4_address: 172.18.0.4
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.18.0.0/24
+         gateway: 172.18.0.1
