@@ -118,8 +118,13 @@ menuitem=$(<"${INPUT}")
 
 # make decsion 
 case $menuitem in
-        "DOCKER PHP56") docker exec -it magento56 bash; break;;
-        "DOCKER PHP70") docker exec -it magento70 bash; break;;
+        "DOCKER PHP56") 
+
+whiptail --title "Inside Docker" --msgbox "CTRL P+Q to Quit from Docker Container" 15 60 4
+docker exec -it magento56 bash; break;;
+        "DOCKER PHP70") 
+whiptail --title "Inside Docker" --msgbox "CTRL P+Q to Quit from Docker Container" 15 60 4
+docker exec -it magento70 bash; break;;
         Exit) echo "Bye"; break;;
 esac
 
