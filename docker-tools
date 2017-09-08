@@ -1,4 +1,5 @@
 #!/bin/bash
+BASEDIR=$(dirname "$0")
 
 INPUT=/tmp/menu.sh.$$
 
@@ -48,6 +49,7 @@ restart70=$(docker exec -it  magento70 service nginx restart)
     whiptail --title "Nginx Restart" --msgbox "Magento56: \n${restart56}\n\
 \nMagento70: \n${restart70} " 15 60 4
 }
+
 function restart_php(){
 restart56=$(docker exec -it  magento56 service php-fpm restart)
 restart70=$(docker exec -it  magento70 service php-fpm restart)
@@ -60,6 +62,7 @@ restart70=$(docker exec -it  magento70 service php-fpm restart)
 whiptail --title "Nginx Restart" --msgbox "Magento56: \n${restart56}\n\
 \nMagento70: \n${restart70} " 15 60 4
 }
+
 function restart_mysql(){
 restartmysql=$(docker exec -it  percona57 service mysql restart)
 {
@@ -79,13 +82,14 @@ do
 whiptail --clear --backtitle "Docker Tools" \
 --title "[ M A I N - M E N U ]" \
 --menu "Please to Check Your Docker IP and Set your domain using the Docker IP\nYou can use the UP/DOWN arrow keys\n\
-Choose the TASK" 15 50 7 \
+Choose the TASK" 15 50 8 \
 "Start All Service" "Start All Docker and Service" \
 "Docker IP" "Check Docker IP" \
 "Restart Nginx" "Restart Nginx Service" \
 "Restart PHP-FPM" "Restart PHP-FPM Service" \
 "Restart MySQL" "Restart MySQL Service" \
 "Stop All Service" "Stop All Service" \
+"Docker Menu" "Go to config menu" \
 "Exit" "Exit to the shell" 2>"${INPUT}"
 
 menuitem=$(<"${INPUT}")
@@ -99,6 +103,28 @@ case $menuitem in
 	"Restart PHP-FPM") restart_php;;
 	"Restart MySQL") restart_mysql;;
         "Stop All Service") stop_service;;
+        "Docker Menu") 
+
+### display main menu ###
+whiptail --clear --backtitle "Docker Tools" \
+--title "[ DOCKER - M E N U ]" \
+--menu "Choose the TASK" 15 50 7 \
+"DOCKER PHP56" "Go to inside the docker PHP56" \
+"DOCKER PHP70" "Go to inside the docker PHP70" \
+"Exit" "Exit to the shell" 2>"${INPUT}"
+
+menuitem=$(<"${INPUT}")
+
+
+# make decsion 
+case $menuitem in
+        "DOCKER PHP56") docker exec -it magento56 bash; break;;
+        "DOCKER PHP70") docker exec -it magento70 bash; break;;
+        Exit) echo "Bye"; break;;
+esac
+
+;;
+
         Exit) echo "Bye"; break;;
 esac
 
