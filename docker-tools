@@ -9,10 +9,22 @@ start70=$(docker exec -it  magento70 service nginx start)
 startphp56=$(docker exec -it  magento56 service php-fpm start)
 startphp70=$(docker exec -it  magento70 service php-fpm start)
 startmysql=$(docker exec -it  percona57 service mysql start)
+{
+    for ((i = 0 ; i <= 100 ; i+=7)); do
+        sleep 1
+        echo $i
+    done
+}| whiptail --gauge "Please wait Docker is Starting" 6 60 0
 whiptail --title "Start Service" --msgbox "Start Service: \n${dockup}\n${start56}\n${start70}\n${startphp56}\n${startphp70}\n${startmysql}" 30 60 5
 }
 
 function stop_service(){
+{
+    for ((i = 0 ; i <= 100 ; i+=8)); do
+        sleep 1
+        echo $i
+    done
+}| whiptail --gauge "Please wait Docker is Stopping" 6 60 0
 dockdown=$(docker-compose down 2>&1)
 whiptail --title "Stop Service" --msgbox "Stop Service: \n${dockdown}" 30 60 5
 }
@@ -27,17 +39,35 @@ ipmysql=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{
 function restart_nginx(){
 restart56=$(docker exec -it  magento56 service nginx restart)
 restart70=$(docker exec -it  magento70 service nginx restart)
+{
+    for ((i = 0 ; i <= 100 ; i+=30)); do
+        sleep 1
+        echo $i
+    done
+}| whiptail --gauge "Please wait Nginx is Restarting" 6 60 0
     whiptail --title "Nginx Restart" --msgbox "Magento56: \n${restart56}\n\
 \nMagento70: \n${restart70} " 15 60 4
 }
 function restart_php(){
 restart56=$(docker exec -it  magento56 service php-fpm restart)
 restart70=$(docker exec -it  magento70 service php-fpm restart)
-    whiptail --title "Nginx Restart" --msgbox "Magento56: \n${restart56}\n\
+{
+    for ((i = 0 ; i <= 100 ; i+=30)); do
+        sleep 1
+        echo $i
+    done
+}| whiptail --gauge "Please wait PHP-FPM is Restarting" 6 60 0    
+whiptail --title "Nginx Restart" --msgbox "Magento56: \n${restart56}\n\
 \nMagento70: \n${restart70} " 15 60 4
 }
 function restart_mysql(){
 restartmysql=$(docker exec -it  percona57 service mysql restart)
+{
+    for ((i = 0 ; i <= 100 ; i+=30)); do
+        sleep 1
+        echo $i
+    done
+}| whiptail --gauge "Please wait MySQL is Restarting" 6 60 0
     whiptail --title "Nginx Restart" --msgbox "MySql Restart: \n${restartmysql} " 15 60 4
 }
 
