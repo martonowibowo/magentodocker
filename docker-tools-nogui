@@ -1,0 +1,69 @@
+#!/bin/bash
+BASEDIR=$(dirname "$0")
+
+INPUT=/tmp/menu.sh.$$
+
+function start_service(){
+dockup=$(docker-compose up -d 2>&1)
+start56=$(docker exec -it  magento56 service nginx start)
+start70=$(docker exec -it  magento70 service nginx start)
+startphp56=$(docker exec -it  magento56 service php-fpm start)
+startphp70=$(docker exec -it  magento70 service php-fpm start)
+startmysql=$(docker exec -it  percona57 service mysql start)
+printf "Start Service: \n${dockup}\n${start56}\n${start70}\n${startphp56}\n${startphp70}\n${startmysql}\n"
+}
+
+function stop_service(){
+dockdown=$(docker-compose down 2>&1)
+printf "Stop Service: \n${dockdown}\n"
+}
+
+function docker_ip(){
+ip56=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' magento56)
+ip70=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' magento70)
+ipmysql=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' percona57)
+   printf "IP PHP56: ${ip56}\nIP PHP70: ${ip70}\nIP MySQL: ${ipmysql}/Pass : password123\n"
+}
+
+function restart_nginx(){
+restart56=$(docker exec -it  magento56 service nginx restart)
+restart70=$(docker exec -it  magento70 service nginx restart)
+    printf "Magento56: \n${restart56}\n\
+\nMagento70: \n${restart70}\n "
+}
+
+function restart_php(){
+restart56=$(docker exec -it  magento56 service php-fpm restart)
+restart70=$(docker exec -it  magento70 service php-fpm restart)
+prinf "Magento56: \n${restart56}\n\
+\nMagento70: \n${restart70} \n" 
+}
+
+function restart_mysql(){
+restartmysql=$(docker exec -it  percona57 service mysql restart)
+    printf "MySql Restart: \n${restartmysql} \n" 
+}
+
+
+
+PS3='Please enter your choice: '
+options=("Start Service" "Docker IP" "Restart Nginx" "Restart PHP-FPM" "Stop All Service" "Quit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Start Service")
+            start_service;;
+        "Docker IP")
+	    docker_ip;;
+        "Restart Nginx")
+	    restart_nginx;;
+	"Restart PHP-FPM")
+	    restart_php;;
+	"Stop All Service")  
+            stop_service;;
+	"Quit")
+            break
+            ;;
+        *) echo invalid option;;
+    esac
+done
